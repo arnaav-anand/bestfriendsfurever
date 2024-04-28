@@ -1,5 +1,5 @@
 import streamlit as st
-
+import config
 #langchain
 from langchain.chains import create_sql_query_chain
 from langchain_openai import ChatOpenAI
@@ -37,7 +37,6 @@ set_bg_hack('backgrounds/pet_bg_alt.jpg')
 
 
 def get_sql_query(query):
-    # api_key = "sk-proj-xP09AAKXBAb64OfB06PuT3BlbkFJrc6E5OcEfY3aNg4fh5H5"
 
     #Prompt template
     _DEFAULT_TEMPLATE = """Given an input question, first create a syntactically correct sqlite query to run, then look at the results of the query and return the answer.
@@ -77,7 +76,7 @@ def get_sql_query(query):
 
     #langchain connection
     db = SQLDatabase.from_uri("sqlite:///pets.db")
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature="0", api_key= api_key)
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature="0", api_key= config.API_KEY)
     chain = create_sql_query_chain(llm, db, prompt = PROMPT)
 
     if query:
