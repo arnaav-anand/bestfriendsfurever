@@ -186,11 +186,11 @@ def details():
             """,
     ):
             if st.button("Adopt"):
-                c.execute(f"UPDATE adoption_status SET adoption_status = 0 WHERE animal_id = {animal_id};")
+                c.execute(f"UPDATE adoption_status SET adoption_status = 1 WHERE animal_id = {animal_id};")
                 conn.commit()
                 adoption_completed = True
                 # modal.open()
-                conn.close()
+                # conn.close()
 
         with stylable_container(
         key="red_button",

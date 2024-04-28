@@ -1,5 +1,5 @@
 import streamlit as st
-import config
+import os
 #langchain
 from langchain.chains import create_sql_query_chain
 from langchain_openai import ChatOpenAI
@@ -16,10 +16,14 @@ from passlib.hash import pbkdf2_sha256
 import base64
 
 conn = sqlite3.connect('pets.db')
+<<<<<<< HEAD
+# os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
+=======
+os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
+>>>>>>> 3b784fa93e97f829d2cc8efb4e15cb7bbb9a681a
 
 def set_bg_hack(main_bg):
     main_bg_ext = "jpg"
-        
     st.markdown(
         f"""
         <style>
@@ -76,7 +80,7 @@ def get_sql_query(query):
 
     #langchain connection
     db = SQLDatabase.from_uri("sqlite:///pets.db")
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature="0", api_key= config.API_KEY)
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature="0", api_key= os.getenv('OPENAI_API_KEY'))
     chain = create_sql_query_chain(llm, db, prompt = PROMPT)
 
     if query:
@@ -134,9 +138,6 @@ def pet_catalog():
         key="container_with_border2",
         css_styles="""
             {
-                border: 1px solid rgba(49, 51, 63, 0.2);
-                border-radius: 0.5rem;
-                background-color: black;
             }
             """,
     ):
@@ -144,7 +145,8 @@ def pet_catalog():
 
     query = st.text_input("What are you looking for?")
 
-    # df = pd.DataFrame(pd.read_sql(get_sql_query(query),conn))
+    adopt_df = pd.DataFrame(pd.read_sql('select adoption_status FROM adoption_status ad inner join animal a using(animal_id);', conn))
+    pets = pd.DataFrame(pd.read_sql('select * FROM animal;', conn))
     pets = pd.DataFrame(pd.read_sql(get_sql_query(query), conn))
     rows = np.array_split(pets,3)
     col1, col2, col3 = st.columns(3)
@@ -182,9 +184,12 @@ def pet_catalog():
                                     st.markdown(f"<div class=text> {pets['pet_age'][ind].title() + ' Old'} </div>", unsafe_allow_html=True)
                                 st.markdown(f"<div class=text> {(pd.read_sql('select sex_desc from sex_type s inner join animal a where s.sex_id = a.sex and a.animal_id=' + str(pets['animal_id'][ind]), conn))['sex_desc'].iloc[0]} </div>", unsafe_allow_html=True)
                                 st.write("")
-                                if st.button("View Details", key=ind):
-                                    st.session_state['animal_id'] = pets['animal_id'][ind]
-                                    st.switch_page("pages/pet_details.py")
+                                if adopt_df['adoption_status'][ind]==1:
+                                    st.write(":red[ALREADY ADOPTED]")
+                                else:
+                                    if st.button("View Details", key=ind):
+                                        st.session_state['animal_id'] = pets['animal_id'][ind]
+                                        st.switch_page("pages/pet_details.py")
                         except Exception as err:
                             st.write(f"Error on {pets['pet_name'][ind]} : {err}")
                             
@@ -219,9 +224,12 @@ def pet_catalog():
                                     st.markdown(f"<div class=text> {pets['pet_age'][ind].title() + ' Old'} </div>", unsafe_allow_html=True)
                                 st.markdown(f"<div class=text> {(pd.read_sql(f'select sex_desc from sex_type s inner join animal a where s.sex_id = a.sex and a.animal_id={pets['animal_id'][ind]};',conn))['sex_desc'][0]} </div>", unsafe_allow_html=True)
                                 st.write("")
-                                if st.button("View Details",key=ind):
-                                    st.session_state['animal_id'] = pets['animal_id'][ind]
-                                    st.switch_page("pages/pet_details.py")
+                                if adopt_df['adoption_status'][ind]==1:
+                                    st.write(":red[ALREADY ADOPTED]")
+                                else:
+                                    if st.button("View Details",key=ind):
+                                        st.session_state['animal_id'] = pets['animal_id'][ind]
+                                        st.switch_page("pages/pet_details.py")
                         except Exception as err:
                             st.write(f'Error on {pets['pet_name'][ind]} : {err}')
                 elif ind % 3 == 2:
@@ -255,9 +263,12 @@ def pet_catalog():
                                     st.markdown(f"<div class=text> {pets['pet_age'][ind].title() + ' Old'} </div>", unsafe_allow_html=True)
                                 st.markdown(f"<div class=text> {(pd.read_sql(f'select sex_desc from sex_type s inner join animal a where s.sex_id = a.sex and a.animal_id={pets['animal_id'][ind]};',conn))['sex_desc'][0]} </div>", unsafe_allow_html=True)
                                 st.write("")
-                                if st.button("View Details",key=ind):
-                                    st.session_state['animal_id'] = pets['animal_id'][ind]
-                                    st.switch_page("pages/pet_details.py")
+                                if adopt_df['adoption_status'][ind]==1:
+                                    st.write(":red[ALREADY ADOPTED]")
+                                else:
+                                    if st.button("View Details",key=ind):
+                                        st.session_state['animal_id'] = pets['animal_id'][ind]
+                                        st.switch_page("pages/pet_details.py")
                         except Exception as err:
                             st.write(f'Error on {pets['pet_name'][ind]} : {err}')
 

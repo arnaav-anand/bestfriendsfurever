@@ -3,6 +3,7 @@ import sqlite3
 from datetime import date
 from streamlit_extras.stylable_container import stylable_container
 import time
+import pandas as pd
 conn = sqlite3.connect('pets.db')
 c = conn.cursor()
 
@@ -104,6 +105,7 @@ def newpet():
                 c.execute("INSERT INTO animal (animal_type, pet_name, intake_type, in_date, pet_age, pet_size, color, breed, sex, crossing, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
                         (animal_type, animal_name, intake_type, date.today().strftime("%m/%d/%y"), pet_age, pet_size, color, breed, sex, crossing, image.read()))
                 conn.commit()
+
                 submission_completed=True
                 # st.write("Submitted!")
         with stylable_container(
@@ -122,10 +124,10 @@ def newpet():
                     st.switch_page('pages/landing.py')
     if submission_completed:
         st.success(f'{animal_name} is in good hands now! Please wait...')
-        # st.markdown(f'<p style="font-family: sans-serif; color: green; font-size: 20px; font-weight: 900; text-align: center;">\
-        #             {animal_name} is in good hands now!</p>', unsafe_allow_html=True)
-        # st.markdown(f'<p style="font-family: sans-serif; color: white; font-size: 20px; font-weight: 900; text-align: center;">\
-        # Please wait...</p>', unsafe_allow_html=True)
+        adopt_query = c.execute(f"SELECT animal_id FROM animal where pet_name='{animal_name}';").fetchall()
+        new_animal_id = adopt_query[0][0]
+        c.execute(f"insert into adoption_status (animal_id, adoption_status) VALUES (?,?);",(new_animal_id,0))
+        conn.commit()
         time.sleep(7)
         st.switch_page('pages/landing.py')
 newpet()
