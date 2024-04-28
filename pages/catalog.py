@@ -1,5 +1,5 @@
 import streamlit as st
-import config
+import os
 #langchain
 from langchain.chains import create_sql_query_chain
 from langchain_openai import ChatOpenAI
@@ -16,10 +16,10 @@ from passlib.hash import pbkdf2_sha256
 import base64
 
 conn = sqlite3.connect('pets.db')
+os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
 
 def set_bg_hack(main_bg):
     main_bg_ext = "jpg"
-        
     st.markdown(
         f"""
         <style>
@@ -76,7 +76,7 @@ def get_sql_query(query):
 
     #langchain connection
     db = SQLDatabase.from_uri("sqlite:///pets.db")
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature="0", api_key= config.API_KEY)
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature="0", api_key= os.getenv('OPENAI_API_KEY'))
     chain = create_sql_query_chain(llm, db, prompt = PROMPT)
 
     if query:
