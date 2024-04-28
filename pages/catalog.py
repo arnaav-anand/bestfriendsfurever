@@ -17,7 +17,11 @@ import base64
 
 conn = sqlite3.connect('pets.db')
 <<<<<<< HEAD
+<<<<<<< HEAD
 # os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
+=======
+os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
+>>>>>>> 3b784fa93e97f829d2cc8efb4e15cb7bbb9a681a
 =======
 os.environ['OPENAI_API_KEY'] = st.secrets['OPENAI_API_KEY']
 >>>>>>> 3b784fa93e97f829d2cc8efb4e15cb7bbb9a681a
