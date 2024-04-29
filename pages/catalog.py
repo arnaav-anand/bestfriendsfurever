@@ -140,7 +140,7 @@ def pet_catalog():
         st.markdown("<div class='centered'><h1>Pet Catalog</h1></div>", unsafe_allow_html=True)
 
     query = st.text_input("What are you looking for?")
-    st.write("Tell our LLM-powered search bar what kind of pets you're looking for in natural language!"
+    st.write("Tell our LLM-powered search bar what kind of pets you're looking for in natural language!")
 
     adopt_df = pd.DataFrame(pd.read_sql('select adoption_status FROM adoption_status ad inner join animal a using(animal_id);', conn))
     pets = pd.DataFrame(pd.read_sql('select * FROM animal;', conn))
